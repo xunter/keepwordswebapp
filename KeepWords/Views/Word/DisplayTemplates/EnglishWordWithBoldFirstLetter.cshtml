@@ -1,0 +1,27 @@
+﻿@model KeepWords.Models.DB.Word
+
+@{
+    var original = Model.Original;
+    var word = Model;
+}
+
+@if (original.ToLower().StartsWith("a "))
+            {
+            <span>a </span><strong>@(word.Original[2])</strong>@(word.Original.Substring(3))
+            }
+            else if (original.ToLower().StartsWith("an "))
+            {
+                <span>an </span><strong>@(word.Original[3])</strong>@(word.Original.Substring(4))
+            }
+            else if (original.ToLower().StartsWith("the "))
+            {
+            <span>the </span><strong>@(word.Original[4])</strong>@(word.Original.Substring(5))    
+            }
+            else if (original.ToLower().StartsWith("to "))
+            {
+            <span>to </span><strong>@(word.Original[3])</strong>@(word.Original.Substring(4))    
+            }
+            else
+            {
+            <strong>@(word.Original[0])</strong>@(word.Original.Substring(1))
+            }

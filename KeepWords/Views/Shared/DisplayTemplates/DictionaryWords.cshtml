@@ -1,0 +1,36 @@
+﻿@model KeepWords.Models.DB.Dictionary
+
+@{
+    var words = Model.Words.ToArray();        
+}
+
+@functions {
+    protected KeepWords.Models.DB.Account CurrentAccount
+    {
+        get { return (KeepWords.Models.DB.Account)ViewData["account"]; }
+    }
+}
+
+
+<div class="well">
+<h2>@Model.DisplayName</h2>
+</div>
+
+<p>
+    <a href="@Url.Action("Add", "Word", new { dictionaryId = Model.ID, backPath = Request.RawUrl })" class="btn btn-primary">Add new word</a>
+    @if (CurrentAccount.ActiveDictionaryID != Model.ID)
+    {
+    <a class="btn" href="@Url.Action("SetActive", "Dictionary", new { id = Model.ID })">Set Active</a>
+    }
+    <a class="btn btn-danger" href="@Url.Action("Delete", new { controller = "Dictionary", id = Model.ID })" onclick="return confirm('Are you sure to delete?')">Delete the dictionary</a>
+</p>
+
+@if (words.Length > 0)
+{
+    var sortedWords = words.OrderBy(w => w.OriginalWithoutExtension);
+    @Html.DisplayFor(m => sortedWords, "WordsTable")
+}
+else
+{
+    <p>The dictionary haven't got words.</p> 
+}

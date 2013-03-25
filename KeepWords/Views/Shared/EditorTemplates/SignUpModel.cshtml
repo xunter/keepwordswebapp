@@ -1,0 +1,24 @@
+﻿@model KeepWords.Models.Account.SignUpModel
+
+<div class="kw-field-edit">
+@Html.TextBoxFor(m => m.UserName, new { placeholder = "Email" })
+@Html.ValidationMessageFor(m => m.UserName)
+</div>
+
+<div class="kw-field-edit">
+@Html.TextBoxFor(m => m.DisplayName, new { placeholder = "Display name" })
+@Html.ValidationMessageFor(m => m.DisplayName)
+</div>
+
+<div class="kw-field-edit">
+@Html.PasswordFor(m => m.PasswordOriginal, new { placeholder = "Password", id = "tbPassword" })
+@Html.ValidationMessageFor(m => m.PasswordOriginal)
+</div>
+
+<div class="kw-field-edit">
+@Html.PasswordFor(m => m.PasswordOriginalReply, new { placeholder = "Password", id = "tbPasswordReply" })
+@Html.ValidationMessageFor(m => m.PasswordOriginalReply)
+</div>
+
+@Html.HiddenFor(m => m.PasswordHash, new { id = "hfHash" })
+@Html.HiddenFor(m => m.PasswordHashReply, new { id = "hfHashReply" })

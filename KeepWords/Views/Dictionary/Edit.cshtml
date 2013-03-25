@@ -1,0 +1,47 @@
+﻿@model KeepWords.Models.DB.Dictionary
+
+@{
+    ViewBag.Title = "Edit the dictionary";
+}
+
+@functions {
+    protected SelectListItem[] LanguagesToSelect
+    {
+        get
+        {
+            return Languages.Select(l => new SelectListItem { Text = String.Format("{0} ({1})", l.Name, l.NativeName), Value = l.ID }).ToArray();
+        }
+    }
+
+    protected IEnumerable<KeepWords.Models.LanguageInfo> Languages
+    {
+        get
+        {
+            return ViewData["languages"] as IEnumerable<KeepWords.Models.LanguageInfo>;
+        }
+    }
+        
+}
+
+@using (Html.BeginForm("Save", "Dictionary", FormMethod.Post, new Dictionary<string, object> { { "class", "well" } }))
+{
+    @Html.ValidationSummary(true)
+    
+<div class="kw-field-edit">
+    @Html.TextBoxFor(m => m.Name, new { placeholder = "Name or alias" })
+    @Html.ValidationMessageFor(m => m.Name)
+</div>
+    @Html.HiddenFor(m => m.FromToDisplayName)
+    @Html.HiddenFor(m => m.ID)
+<div class="kw-field-edit">
+@Html.DropDownListFor(m => m.From, LanguagesToSelect, "From")
+@Html.ValidationMessageFor(m => m.From)
+</div>
+    
+<div class="kw-field-edit">
+@Html.DropDownListFor(m => m.To, LanguagesToSelect, "To")
+@Html.ValidationMessageFor(m => m.To)
+</div>
+    
+        <button type="submit" class="btn btn-primary">Save</button>
+}

@@ -1,0 +1,51 @@
+﻿@model Tuple<KeepWords.Models.DB.Word, IEnumerable<KeepWords.Models.DB.Translation>>
+
+@{
+    var word = Model.Item1;
+    var translations = Model.Item2;
+}
+
+<td>
+    @if (word.Dictionary != null && word.Dictionary.From == "en")
+    {
+        @Html.DisplayFor(m => word, "EnglishWordWithBoldFirstLetter")
+    }
+    else
+    {
+        <span>@word.Original</span>
+    } 
+</td>
+@*<td>&nbsp;</td>*@
+<td>
+    @Html.DisplayFor(m => translations, "TranslationsList")
+</td>
+<td>
+    @if (word.PronounceAudioFileID.HasValue)
+    {
+        var audioElementID = String.Format("audio_{0}", word.ID);
+        var btnElementID = String.Format("btn_audio_{0}", word.ID);
+        var audioSrc = Url.Action("PronounceAudioFile", new { controller = "Word", id = word.ID });
+    <script type="text/javascript">
+        $(function () {
+            var btnId = "@btnElementID";
+            var audioSrc = "@(audioSrc)";
+            var $btn = $("#" + btnId);
+            if (Modernizr.audio.mp3) {
+                $btn.click(function () {
+                    var embedAudio = $btn.data("audio");
+                    if (embedAudio == null) {
+                        var audio = embedAudio = new Audio();
+                        audio.src = audioSrc;
+                        //$btn.data("audio", embedAudio);
+                    } else {
+                        embedAudio.currentTime = 0;
+                    }
+                    embedAudio.play();
+                }).show();
+            } else {
+            }
+        });
+    </script>
+    <button id="@(btnElementID)" style="display:none" class="btn">Play</button>
+    }
+</td>

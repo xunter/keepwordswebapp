@@ -1,0 +1,74 @@
+﻿@model KeepWords.Models.Word.TranslationsModel
+
+@{
+    var word = Model.Word;
+    ViewBag.Title = String.Format("Translations for the \"{0}\" word", word.Original);
+    var translations = Model.Translations.ToArray();
+}
+
+@section head {
+    <script type="text/javascript">
+
+        var TranslationsPage = {
+            $bAdd: null,
+            $divTranslations: null,
+            $form: null,
+            $isSave: null,
+
+            createNewTranslationEditor: function () {
+
+            },
+            removeTranslationEditorClickHandler: function (element, translationId) {
+
+            },
+            addTranslationEditorClickHandler: function (element, translationId) {
+
+            },
+            getFormElement: function () {
+                return document.getElementById("fTranslations");
+            },
+            save: function () {
+                this.$isSave.val("1");
+                //this.$form.submit();
+            },
+            load: function () {
+                var self = this;
+                this.$form = $(this.getFormElement());
+                this.$bAdd = $("#bAdd");
+                this.$isSave = $("#isSave");
+                this.$form.submit(function () {
+                    $("input[type=text]").filter(function () { return !this.value || this.getAttribute("placeholder") == this.value }).val("__IGNORE");
+                });
+
+                $("input[type=text]").filter(function () { return "__IGNORE" == this.value }).val("");
+
+
+            },
+            unload: function () { }
+        };
+        $(function() { TranslationsPage.load() });
+    </script>
+}
+
+@using (Html.BeginForm("SaveAndAddTranslation", "Word", new RouteValueDictionary { { "id", word.ID } }, FormMethod.Post, new Dictionary<string, object> { { "id", "fTranslations" }, { "class", "well" } }))
+{
+    @Html.ValidationSummary(true)
+     
+    @Html.Hidden("isSave")   
+    if (translations.Count() > 0)
+    {
+    @Html.EditorFor(m => translations)
+    }
+    else
+    {
+        <p>There are no translations for the word yet. Just click to the Add button to add.</p> 
+    }
+    
+        <button id="bAdd" type="submit" class="btn btn-primary">Add</button>
+        <button class="btn btn-success" onclick="TranslationsPage.save()">OK</button>
+}
+
+<p>
+    <a class="btn" href="@Url.Action("Edit", new { id = word.ID })">Back to edit the word</a>
+    <a class="btn" href="@Url.Action("List", new { dictionaryId = word.DictionaryID })">Back to the list of words</a>    
+</p>

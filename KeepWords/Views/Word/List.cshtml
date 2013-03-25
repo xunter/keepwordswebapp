@@ -1,0 +1,17 @@
+﻿@model IEnumerable<KeepWords.Models.DB.Dictionary>
+
+@{
+    if (Model.Count() == 1)
+    {
+        ViewBag.Title = String.Format("Words from the {0} dictionary", Model.Single().DisplayName);        
+    }
+    else
+    {
+        ViewBag.Title = "Words";
+    }
+}
+
+@foreach (var dictionary in Model)
+{
+    @Html.DisplayFor(m => dictionary, "DictionaryWords")
+}

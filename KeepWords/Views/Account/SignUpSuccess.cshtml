@@ -1,0 +1,7 @@
+﻿@model KeepWords.Models.DB.Account
+
+@{
+    ViewBag.Title = String.Format("Congratulations, Dear {0}!", Model.DisplayName);
+}
+
+Your registration is successfully completed! Just <a href="@Url.Action("Add", "Dictionary")" class="btn btn-primary">create</a> your first dictionary and Keep your Words!

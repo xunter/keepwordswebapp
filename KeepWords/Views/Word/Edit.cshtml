@@ -1,0 +1,142 @@
+﻿@model KeepWords.Models.DB.Word
+
+@{
+    ViewBag.Title = Model.ID == default(Guid) ? "Adding a new word" : String.Format("Editing the \"{0}\" word.", Model.Original);
+}
+
+@functions {
+}
+
+@section head {
+    <script type="text/javascript">
+        var urlSearchWords = "@Url.Action("SearchWordsJson", new { controller = "Word", dictionaryId = Model.DictionaryID })";
+        var urlFoundWords = "@Url.Action("FoundWordsPartial", new { controller = "Word", dictionaryId = Model.DictionaryID })";
+        var dictionaryId = "@(Model.DictionaryID)";
+
+        var AddWordPage = function () {
+            this._dictionaryId = null;
+            this._urlSearchWords = null;
+            this._urlFoundWords = null;
+            this.$tbWord = null;
+            this.$bSubmit = null;
+            this.$hlSave = null;
+            this.$fSave = null;
+        };
+
+        AddWordPage.prototype = {            
+            init: function (settings) {
+                if (settings.hasOwnProperty("urlSearchWords")) this._urlSearchWords = settings.urlSearchWords;
+                if (settings.hasOwnProperty("urlFoundWords")) this._urlFoundWords = settings.urlFoundWords;
+                if (settings.hasOwnProperty("dictionaryId")) this._dictionaryId = settings.dictionaryId;
+            },
+            load: function () {
+                var self = this;
+                this.$bSubmit = $("#bSubmit");
+                this.$tbWord = $("#tbWord");
+                this.$hlSave = $("#hlSave");
+                this.$foundWordsContainer = $("#foundWordsContainer");
+                this.$tbWord.keyup(function (e) { self.tbWordKeyUpHandler(e); }).keypress(function(e) { self.tbWordKeyPressHandler(e) });
+            },
+            tbWordKeyPressHandler: function(e) {
+                if (e.keyCode === 13 && !this.$tbWord.val()) e.preventDefault();
+            },
+
+            saveWord: function() {
+                this.$bSubmit.click();
+            },
+            hideBtnSubmit: function() {
+                this.$hlSave.css("display", "none");
+            },
+            showBtnSubmit: function() { 
+                this.$hlSave.css("display", "");
+            },
+            unload: function () { },
+            tbWordKeyUpHandler: function (ev) {
+                var word = this.$tbWord.val();
+                if (word.length) {
+                    this.searchWordsAsync(word);
+                } else {
+                    this.hideBtnSubmit();
+                }
+            },
+            searchWordsAsync: function (word) {
+                var self = this;
+                var dictionaryId = this._dictionaryId;
+                var postData = { dictionaryId: dictionaryId, wordToMatch: word };
+                $.post(this._urlSearchWords, postData, function (foundWords) {
+                    self.searchWordsAsyncCallback(foundWords);
+                }, "json");
+            },
+            searchWordsAsyncCallback: function(foundWords) {
+                if (foundWords.length) {
+                    this.hideBtnSubmit();
+                    this.showFoundWords(foundWords);
+                } else {
+                    this.$foundWordsContainer.empty();
+                    this.showBtnSubmit();
+                }
+            },
+            showFoundWords: function(foundWords) {
+                var self = this;
+                var data = JSON.stringify(foundWords);
+                $.ajax({
+                    type: "POST",
+                    url: this._urlFoundWords,
+                    data: data,
+                    contentType: "application/json",
+                    success: function(foundWordsHtml) {
+                        self.$foundWordsContainer.html(foundWordsHtml);
+                    },
+                    error: function(xhr, statusText) {
+                        alert(statusText);                    
+                    }
+                });
+            }
+        };
+
+        var addWordPage = new AddWordPage();
+        addWordPage.init({ dictionaryId: dictionaryId, urlSearchWords: urlSearchWords, urlFoundWords: urlFoundWords });
+        $(window).bind("unload", function() { addWordPage.unload() });
+        $(function() {
+            addWordPage.load();
+        })
+    </script>
+}
+
+<div class="kw-work-area">
+    <div class="kw-word-editor-container">
+        <div class="alert alert-info">
+            <h4>Automatic translations are available</h4>
+            <p>On the next step we'll try to translate the added word.</p>
+        </div>
+        @using (Html.BeginForm("Save", "Word", new RouteValueDictionary { { "dictionaryId", Model.DictionaryID } }, FormMethod.Post, new Dictionary<string, object> { { "id", "fSave" }, { "class", "navbar-form well" } })) {
+            
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.DictionaryID)
+            
+        <div class="row">
+            <div class="span9">            
+            @Html.TextBoxFor(m => m.Original, new Dictionary<string, object> { { "id", "tbWord" }, { "placeholder", "Type a new word..." } })
+            @Html.ValidationMessageFor(m => m.Original)            
+            </div>
+        </div>
+        <br /> 
+        <div class="row">
+            <div class="span9">
+        <button id="bSubmit" style="display:none" type="submit" class="btn btn-primary">Save and manage translations &raquo;</button>
+            </div>
+        </div>
+            
+            
+        }
+    </div>
+    <div id="foundWordsContainer" class="kw-words-mathes-results-container"></div>
+
+    <br />
+    <p>
+        <a href="@Url.Action("List", new { controller = "Word", dictionaryId = Model.DictionaryID })" class="btn">Back to the List</a>
+        <a href="#" id="hlSave" class="btn btn-primary" style="display:none" onclick="addWordPage.saveWord()">Save and manage translations &raquo;</a>
+    </p>
+</div>

@@ -1,0 +1,28 @@
+﻿@model KeepWords.Models.SearchQueryModel
+
+<div class="alert alert-block">
+    <h4>Notice</h4>
+    The found word doesn't exist in your dictionary! It was translated using an external translation service. You can add this word to the dictionary by clicking the "Add to the dictionary" button.
+</div>
+<table class="table table-striped">
+    @Html.Partial("Partial/WordsTableHeader")
+    <tbody>    
+    @{        
+        bool isBackTranslation = Model.TranslationServiceResult.IsBackTranslation;
+        string[] translations = Model.TranslationServiceResult.Translations;
+        string firstTranslation = translations.First();
+        string originalText = Model.TranslationServiceResult.OriginalText;
+        string wordTextFrom = isBackTranslation ? firstTranslation : originalText;
+        var wordsTo = isBackTranslation ? new[] { originalText } : translations;
+    var fakeWordForTranslations = new KeepWords.Models.DB.Word { Original = originalText };
+    var dataToSendViaUrl = String.Join(";", wordsTo);
+    var translationsAsDBObjects = Model.TranslationServiceResult.Translations.Select(t => new KeepWords.Models.DB.Translation { Value = t });
+    }
+    <tr>        
+        @Html.Partial("Partial/WordCells", Tuple.Create(fakeWordForTranslations, (IEnumerable<KeepWords.Models.DB.Translation>)translationsAsDBObjects))
+        <td>
+            <a class="btn btn-primary" href="@Url.Action("AddFromTranslator", new { wordText = wordTextFrom, translationsConcated = dataToSendViaUrl })">Add to the dictionary</a>
+        </td>
+    </tr>
+    </tbody>
+</table>

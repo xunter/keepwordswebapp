@@ -1,0 +1,15 @@
+﻿@model KeepWords.Models.DB.Translation
+
+<div>
+@Html.HiddenFor(m => m.ID)
+@if (String.IsNullOrEmpty(Model.Value))
+{
+@Html.TextBoxFor(m => m.Value, new Dictionary<string, object> { { "class", "input-medium" }, { "style", "margin-top:10px" }, { "placeholder", "Type a translation..." } })
+}
+else
+{
+@Html.HiddenFor(m => m.Value)     
+    <span style="display:inline-block; min-width:100px;">@Model.Value</span>
+}
+&nbsp;<a class="btn btn-danger" href="@Url.Action("RemoveTranslation", new { id = Model.Word.ID, translationId = Model.ID })">Remove</a>
+</div>

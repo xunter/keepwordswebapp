@@ -1,0 +1,23 @@
+﻿@model IEnumerable<KeepWords.Models.DB.Word>
+
+<div class="alert alert-block">
+    <h4>Notice</h4>
+    The found word doesn't exist in your dictionary! It was found from the dictionary which belongs to another user. You can add this word to the dictionary by clicking the "Add to the dictionary" button.
+</div>
+
+<table class="table table-striped">
+    @Html.Partial("Partial/WordsTableHeader")
+    <tbody>            
+@foreach (var word in Model)
+{
+    var translations = word.Translations.ToList();
+    var original = word.Original;
+    <tr>        
+        @Html.Partial("Partial/WordCells", Tuple.Create(word, (IEnumerable<KeepWords.Models.DB.Translation>)translations))
+        <td>
+            <a class="btn btn-primary" href="@Url.Action("AddOther", new { id = word.ID })">Add to the dictionary</a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

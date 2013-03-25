@@ -1,0 +1,284 @@
+﻿@functions {
+    protected string Title
+    {
+        get
+        {
+            return String.IsNullOrEmpty(ViewBag.Title) ? String.Empty : ViewBag.Title;
+        }
+    }
+
+    protected bool IsTitleEmpty
+    {
+        get { return String.IsNullOrEmpty(Title); }
+    }
+
+    protected KeepWords.Models.DB.Account CurrentAccount
+    {
+        get { return ViewData["account"] != null ? (KeepWords.Models.DB.Account)ViewData["account"] : null; }
+    }
+    
+    protected bool IsAuthenticated
+    {
+        get { return CurrentAccount != null; }
+    }
+}
+
+<!DOCTYPE html>
+<html xmlns:fb="http://ogp.me/ns/fb#" lang="en" xml:lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="google" content="notranslate" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:url" content="@Request.RawUrl"/> 
+        <meta property="og:title" content="@Title"/> 
+        <meta property="og:site_name" content="KeepWords"/>
+        <meta property="og:type" content="website" />
+        
+        @if (IsTitleEmpty)
+        {
+            <title>KeepWords</title>                 
+        }
+        else
+        {
+            <title>@Title - KeepWords</title> 
+        }    
+    
+@*<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>*@
+        @Html.Partial("LayoutParts/ScriptIncludes")
+        @Html.Partial("LayoutParts/CSSIncludes")
+
+
+   @*<!-- Le fav and touch icons -->
+   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="@Url.Content("~/Content/bootmetro/ico/apple-touch-icon-144-precomposed.png")">
+   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="@Url.Content("~/Content/bootmetro/ico/apple-touch-icon-114-precomposed.png")">
+   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="@Url.Content("~/Content/bootmetro/ico/apple-touch-icon-72-precomposed.png")">
+   <link rel="apple-touch-icon-precomposed" href="@Url.Content("~/Content/bootmetro/ico/apple-touch-icon-57-precomposed.png")">*@
+
+        <script type="text/javascript" src="@Url.Content("~/Scripts/placeholder_solve.js")"></script>        
+        <style type="text/css">      
+            .kw-header
+            {
+                position: relative;
+                height: 40px;
+                background-color:#333333;
+                color: #ffffff;
+                box-shadow: 0 5px 10px rgba(8,8,8,0.5);
+                padding: 0 10px;
+            }
+            .kw-header .kw-header-title
+            {
+                position: relative;
+                display: inline-block;
+                font-size: 1.85em;
+                font-weight: bold;
+                padding: 5px 0;
+                vertical-align: middle;
+                height:30px;
+
+            }
+            .kw-header .kw-header-title a
+            {
+                color: #ffffff;
+                height: 25px;
+                padding-top: 5px;
+                vertical-align: middle;
+                text-decoration: none;  
+                display: inline-block;                  
+            }
+            .kw-header .kw-header-title a:hover
+            {
+                text-decoration: underline;
+            }
+            .kw-header .kw-header-menu
+            {
+                display: inline-block;
+                padding: 10px 0;
+                vertical-align: middle;
+                height:20px;
+                
+            }
+            .kw-header .kw-account
+            {
+                display: inline-block;
+                float: right;
+                padding-top: 10px;
+                vertical-align: middle;
+                height:40px;
+            }
+            .kw-content
+            {
+                background-color: #ffffff;
+                border-top: none;
+                box-shadow: 0 5px 10px rgba(8,8,8,0.5);
+                border-radius: 5px 5px;
+                border-top-left-radius: 0 0;
+                border-top-right-radius: 0 0;
+                padding: 10px;
+                margin: 0 40px;
+            }
+            .kw-footer
+            {
+                margin-top: 10px;
+                text-align: center;                
+            }
+            
+            .kw-loading
+            {
+                left:0;
+                top:0;
+                position:fixed;
+                width:100%;
+                height:100%;
+                background-image:url(@(Url.Content("~/Content/Images/tile_gray_40.png")));
+                z-index: 2001;
+            }
+            .kw-loading .kw-loading-img-container
+            {
+                position:fixed;
+                left: 50%;
+                top: 50%;
+                width: 64px;
+                heght: 64px;
+                margin-left: -32px;
+                margin-top: -32px;
+                z-index: 2002;
+            }
+            .kw-loading .kw-loading-img-container .kw-loading-img
+            {
+
+            }
+        </style>
+        @RenderSection("head", false)
+    </head>
+    <body>
+    @RenderSection("afterBody", false)
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">        
+        <div class="container">          
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+          <a class="brand" href="@Url.Action("Index", "Home")">KeepWords</a>
+          <div class="nav-collapse collapse">
+          @if (IsAuthenticated)
+          {
+          
+            <ul class="nav">
+                @if (CurrentAccount.ActiveDictionary != null)
+                {
+                @Html.Action("DictionaryNavigationItem", "Dictionary")
+                <li>@Html.ActionLink("Words", "List", new { dictionaryId = CurrentAccount.ActiveDictionaryID })</li>
+                }
+                else
+                {
+                <li>@Html.ActionLink("Create Dictionary", "Add", new { controller = "Dictionary" })</li>
+                }
+            </ul>
+          
+          }
+          </div>   
+            
+          @if (CurrentAccount != null && CurrentAccount.ActiveDictionaryID != null)
+          {         
+          <ul class="nav">
+            <li>            
+        <form id="fWordSearch" class="navbar-search" method="post" action="@Url.Action("Search", "Word")">
+            @{
+              var newSearchModel = new KeepWords.Models.SearchQueryModel();
+            }
+            @Html.AntiForgeryToken()
+            @Html.EditorFor(m => newSearchModel)
+        </form>
+        <script type="text/javascript">
+            $(function () {
+                $("#QueryText").keypress(function (e) {
+                    if (e.keyCode === 13 && !$(this).val()) {
+                        e.preventDefault();
+                    }
+
+                });
+            })
+        </script>
+            </li>
+          </ul>
+          }
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+                @if (CurrentAccount != null)
+                {
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@CurrentAccount.DisplayName <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    @*<li>@Html.ActionLink("Profile", "Profile", "Account")</li>*@
+                    @if (CurrentAccount.IsBuiltIn)
+                    {
+                    <li>@Html.ActionLink("Change password", "ChangePassword", "Account")</li>
+                    }
+                    <li>@Html.ActionLink("Sign Out", "SignOut", "Account")</li>
+                </ul>
+              </li>
+                }
+                else
+                {
+                    <li>@Html.ActionLink("Sign In", "SignIn", "Account")</li>
+                    <li>@Html.ActionLink("Sign Up", "SignUp", "Account")</li>
+                }                
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+    <div class="container">
+            @if (!IsTitleEmpty)
+            {    
+                <div class="page-header">
+                    <h1>@Title</h1>                
+                </div>
+            }    
+        @RenderBody()    
+        <hr />
+        <footer>&copy; @(DateTime.Now.Year) KeepWords.</footer>
+    </div>
+    <div id="globalLoading" class="kw-loading" style="display:none">
+        <div class="kw-loading-img-container">
+            <img class="kw-loading-img" src="@Url.Content("~/Content/Images/loading.gif")" alt="loading..." />
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(window).bind("beforeunload", function () {
+            setTimeout(function () {
+                $("#globalLoading").show();
+            }, 1000);
+        });
+    </script>
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-35931656-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+</script>
+    @*<script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/google-code-prettify/prettify.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/jquery.mousewheel.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/jquery.scrollTo.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/bootstrap.min.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/bootmetro.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/bootmetro-charms.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/demo.js")"></script>
+   <script type="text/javascript" src="@Url.Content("~/Scripts/bootmetro/holder.js")"></script>
+
+   <script type="text/javascript">
+       $(".metro").metro();
+   </script>*@
+    </body>
+</html>

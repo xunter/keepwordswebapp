@@ -1,0 +1,19 @@
+﻿@model IEnumerable<KeepWords.Models.DB.Word>
+
+<table class="table table-striped">
+    @Html.Partial("Partial/WordsTableHeader")
+    <tbody>            
+@foreach (var word in Model)
+{
+    var translations = word.Translations.ToList();
+    var original = word.Original;
+    <tr>
+        @Html.Partial("Partial/WordCells", Tuple.Create(word, (IEnumerable<KeepWords.Models.DB.Translation>)translations))
+        <td>
+            <a class="btn" href="@Url.Action("Translations", new { id = word.ID })">Translations</a>
+            <a class="btn btn-danger" href="@Url.Action("Remove", new { id = word.ID, backPath = Request.RawUrl })" onclick="return confirm('Are you sure to delete?')">Delete</a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

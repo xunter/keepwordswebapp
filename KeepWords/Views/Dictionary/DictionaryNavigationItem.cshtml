@@ -1,0 +1,28 @@
+﻿@model KeepWords.Models.DB.Dictionary[]
+         
+@functions {
+    protected KeepWords.Models.DB.Account CurrentAccount
+    {
+        get { return ViewData["account"] != null ? (KeepWords.Models.DB.Account)ViewData["account"] : null; }
+    }
+}
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@CurrentAccount.ActiveDictionary.FromToDisplayName <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        @{
+            var dictionriesExceptActive = Model.Where(d => d.ID != CurrentAccount.ActiveDictionaryID).ToArray();    
+        }
+        @if (dictionriesExceptActive.Length > 0)
+        {
+            foreach (var dictionary in dictionriesExceptActive)
+            {
+                <li>@Html.ActionLink(dictionary.DisplayName, "SetActive", new { controller = "Dictionary", id = dictionary.ID })</li>
+            }
+        }
+        else
+        {
+            <li>@Html.ActionLink("Add another", "Add", "Dictionary")</li> 
+        }
+    </ul>
+</li>
+

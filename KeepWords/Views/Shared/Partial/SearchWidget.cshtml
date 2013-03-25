@@ -1,0 +1,8 @@
+﻿@model System.String
+
+<div class="kw-searchWidgetContainer">
+@using (Html.BeginForm(new { area = "", controller = "Word", action = "Search" })) {
+    @Html.TextBoxFor(m => m)
+    <input type="submit" value="Найти" />
+}
+</div>

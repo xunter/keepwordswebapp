@@ -1,0 +1,37 @@
+﻿
+@functions {
+    protected IHtmlString IncludeCSS(params string[] pathes)
+    {
+        if (pathes.Length == 1)
+        {
+            string path = pathes[0];
+            return new PavelNazarov.Common.Web.MVC.RawHtmlString(String.Format("<link rel=\"Stylesheet\" type=\"text/css\" href=\"{0}\" />", Url.Content(path)));
+        }
+        else
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (string path in pathes)
+            {
+                sb.Append(String.Format("<link rel=\"Stylesheet\" type=\"text/css\" href=\"{0}\" />", Url.Content(path)));
+            }
+            string textToRender = sb.ToString();
+            IHtmlString htmlText = new PavelNazarov.Common.Web.MVC.RawHtmlString(textToRender);
+            return htmlText;
+        }
+    }
+}
+
+@*<link href="@Url.Content("~/Content/CSS/Site.css")" rel="stylesheet" type="text/css" />*@
+@IncludeCSS("~/Content/bootstrap/css/bootstrap.css")
+<style type="text/css">
+    body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }                
+</style>
+@IncludeCSS("~/Content/bootstrap/css/bootstrap-responsive.css")
+@*@IncludeCSS("~/Content/bootmetro/css/bootmetro.css",
+            "~/Content/bootmetro/css/bootmetro-tiles.css",
+            "~/Content/bootmetro/css/bootmetro-charms.css",
+            "~/Content/bootmetro/css/metro-ui-light.css",
+            "~/Content/bootmetro/css/icomoon.css")*@

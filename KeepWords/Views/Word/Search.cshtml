@@ -1,0 +1,28 @@
+﻿@model KeepWords.Models.SearchQueryModel
+
+@{
+    ViewBag.Title = String.Format("Search results for the query \"{0}\"", Model.QueryText);
+    var account = ViewData["account"] as KeepWords.Models.DB.Account;
+}
+
+@if (!Model.IsEmpty)
+{
+    var words = Model.Results.OfType<KeepWords.Models.WordSearchResultModel>().Select(r => r.WordInstance);
+    if (words.Count() > 0)
+    {
+    @Html.DisplayFor(m => words, "WordsTable")
+    }
+    else if (Model.OthersDictionariesResults != null && Model.OthersDictionariesResults.Length > 0)
+    {
+        var wordsFromOtherDicts = Model.OthersDictionariesResults.Cast<KeepWords.Models.WordSearchResultModel>().Select(r => r.WordInstance).ToArray();
+        @Html.DisplayFor(m => wordsFromOtherDicts, "OtherWordsTable")    
+    }
+    else
+    {
+        @Html.DisplayForModel("FoundWordsTableUsingTranslator")
+    }
+}
+else
+{
+    <p>There are no results for the query. You can <a class="btn btn-primary" href="@Url.Action("Add", "Word", new { dictionaryId = account.ActiveDictionaryID, wordText = Model.QueryText })">Add</a> a new word.</p> 
+}

@@ -1,0 +1,13 @@
+﻿@model KeepWords.Models.Account.SignInModel
+
+<div class="kw-field-edit">
+@Html.TextBoxFor(m => m.UserName, new Dictionary<string, object> { { "placeholder", "Email" }, { "class", "input-xlarge" } })
+@Html.ValidationMessageFor(m => m.UserName)
+</div>
+
+<div class="kw-field-edit">
+@Html.PasswordFor(m => m.PasswordOriginal, new Dictionary<string, object> { { "placeholder", "Password" }, { "id", "tbPassword" }, { "class", "input-xlarge" } })
+@Html.ValidationMessageFor(m => m.PasswordOriginal)
+</div>
+
+@Html.HiddenFor(m => m.PasswordHash, new { id = "hfHash" })

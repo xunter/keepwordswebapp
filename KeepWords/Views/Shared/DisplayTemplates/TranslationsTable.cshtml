@@ -1,0 +1,12 @@
+﻿@model IEnumerable<KeepWords.Models.DB.Translation>
+
+<table class="table">
+    <tbody>
+        @foreach (var translation in Model)
+        {
+            <tr>
+                <td>@translation.Value</td>
+            </tr>
+        }
+    </tbody>
+</table>
